@@ -9,7 +9,8 @@ login() {
 post() { local url=$1 hdr=$2 body=$3; printf '%s' "$body" | curl -s -X POST "$url" -H "$hdr" -H 'Content-Type: application/json' --data-binary @-; }
 j() { python -X utf8 -c "import sys,json;d=json.load(sys.stdin);print($1)"; }
 
-PW='admin123'
+# 默认为 RuoYi 演示账号初始密码，可用环境变量 PW 覆盖
+PW=${PW:-admin123}
 AT=$(login admin "$PW"); FT=$(login farmer "$PW")
 echo "admin token len ${#AT}, farmer token len ${#FT}"
 AH="Authorization: Bearer $AT"; FH="Authorization: Bearer $FT"

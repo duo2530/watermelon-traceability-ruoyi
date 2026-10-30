@@ -1,0 +1,30 @@
+# 依赖与构建产物
+node_modules/
+target/
+dist/
+unpackage/
+*.log
+
+# 环境变量与密钥
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+application-local.yml
+application-prod-secret.yml
+
+# 上传文件 / 二维码输出（ruoyi.profile）
+uploadPath/
+upload/
+
+# IDE / 系统
+.idea/
+*.iml
+.vscode/
+.hbuilderx/
+.DS_Store
+Thumbs.db
