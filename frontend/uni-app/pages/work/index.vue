@@ -11,6 +11,19 @@
       </swiper>
     </uni-swiper-dot>
 
+    <!-- 西瓜溯源 -->
+    <uni-section title="西瓜溯源" type="line"></uni-section>
+    <view class="grid-body">
+      <uni-grid :column="4" :showBorder="false" @change="changeTraceGrid">
+        <uni-grid-item v-for="(t, i) in traceMenus" :key="i" :index="i">
+          <view class="grid-item-box">
+            <uni-icons :type="t.icon" size="30" color="#2e7d32"></uni-icons>
+            <text class="text">{{ t.label }}</text>
+          </view>
+        </uni-grid-item>
+      </uni-grid>
+    </view>
+
     <!-- 宫格组件 -->
     <uni-section title="系统管理" type="line"></uni-section>
     <view class="grid-body">
@@ -88,6 +101,20 @@
 
   function changeSwiper(e) {
     current.value = e.detail.current
+  }
+
+  const traceMenus = [
+    { label: '工作台', icon: 'home', url: '/pages/farmer/index' },
+    { label: '农事录入', icon: 'compose', url: '/pages/farmer/farm-record' },
+    { label: '糖度果型', icon: 'medal', url: '/pages/farmer/qc-submit' },
+    { label: '新建批次', icon: 'plusempty', url: '/pages/farmer/batch-create' },
+    { label: '批次二维码', icon: 'scan', url: '/pages/farmer/batch-list' },
+    { label: '离线同步', icon: 'cloud-upload', url: '/pages/farmer/sync' },
+    { label: '扫码验真', icon: 'search', url: '/pages/consumer/scan' }
+  ]
+
+  function changeTraceGrid(e) {
+    proxy.$tab.navigateTo(traceMenus[e.detail.index].url)
   }
 
   function changeGrid(e) {

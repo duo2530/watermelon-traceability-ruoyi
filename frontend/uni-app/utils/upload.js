@@ -52,7 +52,8 @@ export default function upload(config) {
         }
       },
       fail: (error) => {
-        let { message } = error
+        // uni.request 失败时只有 errMsg，没有 message
+        let message = (error && (error.message || error.errMsg)) || ''
         if (message == 'Network Error') {
           message = '后端接口连接异常'
         } else if (message.includes('timeout')) {

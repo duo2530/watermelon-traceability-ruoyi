@@ -10,6 +10,8 @@ const baseUrl = config.baseUrl
 const request = config => {
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken === false
+  // silent: 不弹出错误提示（离线队列后台同步用）
+  const silent = config.silent === true
   config.header = config.header || {}
   if (getToken() && !isToken) {
     config.header['Authorization'] = 'Bearer ' + getToken()
@@ -42,16 +44,17 @@ const request = config => {
           })
           reject('无效的会话，或者会话已过期，请重新登录。')
         } else if (code === 500) {
-          toast(msg)
+          !silent && toast(msg)
           reject('500')
         } else if (code !== 200) {
-          toast(msg)
+          !silent && toast(msg)
           reject(code)
         }
         resolve(res.data)
       })
       .catch(error => {
-        let { message } = error
+        // uni.request 失败时只有 errMsg，没有 message
+        let message = (error && (error.message || error.errMsg)) || ''
         if (message === 'Network Error') {
           message = '后端接口连接异常'
         } else if (message.includes('timeout')) {
@@ -59,7 +62,7 @@ const request = config => {
         } else if (message.includes('Request failed with status code')) {
           message = '系统接口' + message.slice(-3) + '异常'
         }
-        toast(message)
+        !silent && toast(message)
         reject(error)
       })
   })
