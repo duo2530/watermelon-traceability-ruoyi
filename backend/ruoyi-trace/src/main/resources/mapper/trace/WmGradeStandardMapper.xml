@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trace.mapper.WmGradeStandardMapper">
+
+    <resultMap type="WmGradeStandard" id="WmGradeStandardResult">
+        <id     property="standardId" column="standard_id" />
+        <result property="gradeCode" column="grade_code" />
+        <result property="gradeName" column="grade_name" />
+        <result property="variety" column="variety" />
+        <result property="sugarCenterMin" column="sugar_center_min" />
+        <result property="sugarEdgeMin" column="sugar_edge_min" />
+        <result property="weightMin" column="weight_min" />
+        <result property="weightMax" column="weight_max" />
+        <result property="shapeAllow" column="shape_allow" />
+        <result property="sort" column="sort" />
+        <result property="status" column="status" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <sql id="selectWmGradeStandardVo">
+        select g.standard_id, g.grade_code, g.grade_name, g.variety, g.sugar_center_min, g.sugar_edge_min, g.weight_min, g.weight_max, g.shape_allow, g.sort, g.status, g.create_by, g.create_time, g.update_by, g.update_time, g.remark
+        from wm_grade_standard g
+    </sql>
+
+    <select id="selectWmGradeStandardList" parameterType="WmGradeStandard" resultMap="WmGradeStandardResult">
+        <include refid="selectWmGradeStandardVo"/>
+        <where>
+            <if test="gradeCode != null and gradeCode != ''"> and g.grade_code = #{gradeCode}</if>
+            <if test="gradeName != null and gradeName != ''"> and g.grade_name like concat('%', #{gradeName}, '%')</if>
+            <if test="variety != null and variety != ''"> and g.variety = #{variety}</if>
+            <if test="status != null and status != ''"> and g.status = #{status}</if>
+        </where>
+        order by g.sort asc, g.standard_id asc
+    </select>
+
+    <select id="selectWmGradeStandardById" parameterType="Long" resultMap="WmGradeStandardResult">
+        <include refid="selectWmGradeStandardVo"/>
+        where g.standard_id = #{standardId}
+    </select>
+
+    <insert id="insertWmGradeStandard" parameterType="WmGradeStandard" useGeneratedKeys="true" keyProperty="standardId">
+        insert into wm_grade_standard
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gradeCode != null">grade_code,</if>
+            <if test="gradeName != null">grade_name,</if>
+            <if test="variety != null">variety,</if>
+            <if test="sugarCenterMin != null">sugar_center_min,</if>
+            <if test="sugarEdgeMin != null">sugar_edge_min,</if>
+            <if test="weightMin != null">weight_min,</if>
+            <if test="weightMax != null">weight_max,</if>
+            <if test="shapeAllow != null">shape_allow,</if>
+            <if test="sort != null">sort,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gradeCode != null">#{gradeCode},</if>
+            <if test="gradeName != null">#{gradeName},</if>
+            <if test="variety != null">#{variety},</if>
+            <if test="sugarCenterMin != null">#{sugarCenterMin},</if>
+            <if test="sugarEdgeMin != null">#{sugarEdgeMin},</if>
+            <if test="weightMin != null">#{weightMin},</if>
+            <if test="weightMax != null">#{weightMax},</if>
+            <if test="shapeAllow != null">#{shapeAllow},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateWmGradeStandard" parameterType="WmGradeStandard">
+        update wm_grade_standard
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="gradeCode != null">grade_code = #{gradeCode},</if>
+            <if test="gradeName != null">grade_name = #{gradeName},</if>
+            <if test="variety != null">variety = #{variety},</if>
+            <if test="sugarCenterMin != null">sugar_center_min = #{sugarCenterMin},</if>
+            <if test="sugarEdgeMin != null">sugar_edge_min = #{sugarEdgeMin},</if>
+            <if test="weightMin != null">weight_min = #{weightMin},</if>
+            <if test="weightMax != null">weight_max = #{weightMax},</if>
+            <if test="shapeAllow != null">shape_allow = #{shapeAllow},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </trim>
+        where standard_id = #{standardId}
+    </update>
+
+    <delete id="deleteWmGradeStandardById" parameterType="Long">
+        delete from wm_grade_standard where standard_id = #{standardId}
+    </delete>
+
+    <delete id="deleteWmGradeStandardByIds" parameterType="Long">
+        delete from wm_grade_standard where standard_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

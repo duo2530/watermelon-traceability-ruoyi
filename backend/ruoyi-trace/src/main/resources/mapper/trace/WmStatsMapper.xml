@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trace.mapper.WmStatsMapper">
+
+    <sql id="qcWhere">
+        <where>
+            <if test="farmerId != null"> and b.farmer_id = #{farmerId}</if>
+            <if test="batchId != null"> and q.batch_id = #{batchId}</if>
+            <if test="variety != null and variety != ''"> and b.variety = #{variety}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"> and date_format(q.check_time,'%Y%m%d') &gt;= date_format(#{params.beginTime},'%Y%m%d')</if>
+            <if test="params.endTime != null and params.endTime != ''"> and date_format(q.check_time,'%Y%m%d') &lt;= date_format(#{params.endTime},'%Y%m%d')</if>
+        </where>
+    </sql>
+
+    <select id="selectOverview" parameterType="WmQcRecord" resultType="java.util.LinkedHashMap">
+        select
+            (select count(1) from wm_batch b <where><if test="farmerId != null"> and b.farmer_id = #{farmerId}</if></where>) as batchCount,
+            (select count(1) from wm_farm_record r left join wm_batch b on b.batch_id = r.batch_id <where><if test="farmerId != null"> and b.farmer_id = #{farmerId}</if></where>) as farmCount,
+            (select ifnull(sum(b.scan_count), 0) from wm_batch b <where><if test="farmerId != null"> and b.farmer_id = #{farmerId}</if></where>) as scanCount,
+            count(q.qc_id) as qcCount,
+            round(ifnull(avg(q.sugar_center), 0), 2) as avgSugar,
+            ifnull(max(q.sugar_center), 0) as maxSugar,
+            ifnull(min(q.sugar_center), 0) as minSugar,
+            round(ifnull(avg(q.weight_kg), 0), 2) as avgWeight,
+            ifnull(sum(case when q.grade_code in ('SPECIAL', 'FIRST') then 1 else 0 end), 0) as premiumCount
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+        <include refid="qcWhere"/>
+    </select>
+
+    <select id="selectGradeDistribution" parameterType="WmQcRecord" resultType="java.util.LinkedHashMap">
+        select ifnull(nullif(q.grade_code, ''), 'NONE') as gradeCode,
+               ifnull(nullif(max(q.grade_name), ''), '等外') as gradeName,
+               count(1) as total
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+        <include refid="qcWhere"/>
+        group by ifnull(nullif(q.grade_code, ''), 'NONE')
+        order by total desc
+    </select>
+
+    <select id="selectSugarDistribution" parameterType="WmQcRecord" resultType="java.util.LinkedHashMap">
+        select floor(q.sugar_center) as bucket, count(1) as total
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+        <include refid="qcWhere"/>
+        group by floor(q.sugar_center)
+        order by bucket
+    </select>
+
+    <select id="selectMonthlyTrend" parameterType="WmQcRecord" resultType="java.util.LinkedHashMap">
+        select date_format(q.check_time, '%Y-%m') as month,
+               count(1) as total,
+               round(avg(q.sugar_center), 2) as avgSugar,
+               round(avg(q.sugar_edge), 2) as avgEdge
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+        <include refid="qcWhere"/>
+        group by date_format(q.check_time, '%Y-%m')
+        order by month
+    </select>
+
+    <select id="selectVarietySummary" parameterType="WmQcRecord" resultType="java.util.LinkedHashMap">
+        select ifnull(nullif(b.variety, ''), '未知') as variety,
+               count(1) as total,
+               round(avg(q.sugar_center), 2) as avgSugar,
+               round(avg(q.weight_kg), 2) as avgWeight
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+        <include refid="qcWhere"/>
+        group by ifnull(nullif(b.variety, ''), '未知')
+        order by total desc
+    </select>
+
+    <select id="selectBatchSummary" parameterType="WmQcRecord" resultType="java.util.LinkedHashMap">
+        select b.batch_id as batchId, b.batch_code as batchCode, b.variety as variety,
+               count(q.qc_id) as total,
+               round(avg(q.sugar_center), 2) as avgSugar,
+               round(avg(q.weight_kg), 2) as avgWeight,
+               sum(case when q.grade_code in ('SPECIAL', 'FIRST') then 1 else 0 end) as premiumCount
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+        <include refid="qcWhere"/>
+        group by b.batch_id, b.batch_code, b.variety
+        order by b.batch_id desc
+    </select>
+</mapper>

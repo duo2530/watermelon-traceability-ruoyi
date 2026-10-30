@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trace.mapper.WmQcRecordMapper">
+
+    <resultMap type="WmQcRecord" id="WmQcRecordResult">
+        <id     property="qcId" column="qc_id" />
+        <result property="batchId" column="batch_id" />
+        <result property="sampleNo" column="sample_no" />
+        <result property="sugarCenter" column="sugar_center" />
+        <result property="sugarEdge" column="sugar_edge" />
+        <result property="fruitShape" column="fruit_shape" />
+        <result property="weightKg" column="weight_kg" />
+        <result property="gradeCode" column="grade_code" />
+        <result property="gradeName" column="grade_name" />
+        <result property="checkTime" column="check_time" />
+        <result property="images" column="images" />
+        <result property="inspector" column="inspector" />
+        <result property="clientId" column="client_id" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+        <result property="batchCode" column="batchCode" />
+        <result property="variety" column="variety" />
+        <result property="farmerId" column="farmerId" />
+    </resultMap>
+
+    <sql id="selectWmQcRecordVo">
+        select q.qc_id, q.batch_id, q.sample_no, q.sugar_center, q.sugar_edge, q.fruit_shape, q.weight_kg, q.grade_code, q.grade_name, q.check_time, q.images, q.inspector, q.client_id, q.create_by, q.create_time, q.update_by, q.update_time, q.remark, b.batch_code as batchCode, b.variety as variety, b.farmer_id as farmerId
+        from wm_qc_record q
+        left join wm_batch b on b.batch_id = q.batch_id
+    </sql>
+
+    <select id="selectWmQcRecordList" parameterType="WmQcRecord" resultMap="WmQcRecordResult">
+        <include refid="selectWmQcRecordVo"/>
+        <where>
+            <if test="batchId != null"> and q.batch_id = #{batchId}</if>
+            <if test="sampleNo != null and sampleNo != ''"> and q.sample_no like concat('%', #{sampleNo}, '%')</if>
+            <if test="fruitShape != null and fruitShape != ''"> and q.fruit_shape = #{fruitShape}</if>
+            <if test="gradeCode != null and gradeCode != ''"> and q.grade_code = #{gradeCode}</if>
+            <if test="farmerId != null"> and b.farmer_id = #{farmerId}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"> and date_format(q.check_time,'%Y%m%d') &gt;= date_format(#{params.beginTime},'%Y%m%d')</if>
+            <if test="params.endTime != null and params.endTime != ''"> and date_format(q.check_time,'%Y%m%d') &lt;= date_format(#{params.endTime},'%Y%m%d')</if>
+        </where>
+        order by q.check_time desc, q.qc_id desc
+    </select>
+
+    <select id="selectWmQcRecordById" parameterType="Long" resultMap="WmQcRecordResult">
+        <include refid="selectWmQcRecordVo"/>
+        where q.qc_id = #{qcId}
+    </select>
+
+    <insert id="insertWmQcRecord" parameterType="WmQcRecord" useGeneratedKeys="true" keyProperty="qcId">
+        insert into wm_qc_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchId != null">batch_id,</if>
+            <if test="sampleNo != null">sample_no,</if>
+            <if test="sugarCenter != null">sugar_center,</if>
+            <if test="sugarEdge != null">sugar_edge,</if>
+            <if test="fruitShape != null">fruit_shape,</if>
+            <if test="weightKg != null">weight_kg,</if>
+            <if test="gradeCode != null">grade_code,</if>
+            <if test="gradeName != null">grade_name,</if>
+            <if test="checkTime != null">check_time,</if>
+            <if test="images != null">images,</if>
+            <if test="inspector != null">inspector,</if>
+            <if test="clientId != null">client_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchId != null">#{batchId},</if>
+            <if test="sampleNo != null">#{sampleNo},</if>
+            <if test="sugarCenter != null">#{sugarCenter},</if>
+            <if test="sugarEdge != null">#{sugarEdge},</if>
+            <if test="fruitShape != null">#{fruitShape},</if>
+            <if test="weightKg != null">#{weightKg},</if>
+            <if test="gradeCode != null">#{gradeCode},</if>
+            <if test="gradeName != null">#{gradeName},</if>
+            <if test="checkTime != null">#{checkTime},</if>
+            <if test="images != null">#{images},</if>
+            <if test="inspector != null">#{inspector},</if>
+            <if test="clientId != null">#{clientId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateWmQcRecord" parameterType="WmQcRecord">
+        update wm_qc_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchId != null">batch_id = #{batchId},</if>
+            <if test="sampleNo != null">sample_no = #{sampleNo},</if>
+            <if test="sugarCenter != null">sugar_center = #{sugarCenter},</if>
+            <if test="sugarEdge != null">sugar_edge = #{sugarEdge},</if>
+            <if test="fruitShape != null">fruit_shape = #{fruitShape},</if>
+            <if test="weightKg != null">weight_kg = #{weightKg},</if>
+            <if test="gradeCode != null">grade_code = #{gradeCode},</if>
+            <if test="gradeName != null">grade_name = #{gradeName},</if>
+            <if test="checkTime != null">check_time = #{checkTime},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="inspector != null">inspector = #{inspector},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </trim>
+        where qc_id = #{qcId}
+    </update>
+
+    <delete id="deleteWmQcRecordById" parameterType="Long">
+        delete from wm_qc_record where qc_id = #{qcId}
+    </delete>
+
+    <delete id="deleteWmQcRecordByIds" parameterType="Long">
+        delete from wm_qc_record where qc_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectWmQcRecordByClientId" parameterType="String" resultMap="WmQcRecordResult">
+        <include refid="selectWmQcRecordVo"/>
+        where q.client_id = #{clientId}
+    </select>
+
+    <select id="countWmQcRecordByBatchIds" parameterType="Long" resultType="int">
+        select count(1) from wm_qc_record where batch_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

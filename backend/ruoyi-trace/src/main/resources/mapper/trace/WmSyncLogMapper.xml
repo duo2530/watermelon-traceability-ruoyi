@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trace.mapper.WmSyncLogMapper">
+
+    <resultMap type="WmSyncLog" id="WmSyncLogResult">
+        <id     property="logId" column="log_id" />
+        <result property="clientId" column="client_id" />
+        <result property="dataType" column="data_type" />
+        <result property="result" column="result" />
+        <result property="message" column="message" />
+        <result property="bizId" column="biz_id" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+    </resultMap>
+
+    <sql id="selectWmSyncLogVo">
+        select s.log_id, s.client_id, s.data_type, s.result, s.message, s.biz_id, s.create_by, s.create_time
+        from wm_sync_log s
+    </sql>
+
+    <select id="selectWmSyncLogList" parameterType="WmSyncLog" resultMap="WmSyncLogResult">
+        <include refid="selectWmSyncLogVo"/>
+        <where>
+            <if test="clientId != null and clientId != ''"> and s.client_id = #{clientId}</if>
+            <if test="dataType != null and dataType != ''"> and s.data_type = #{dataType}</if>
+            <if test="result != null and result != ''"> and s.result = #{result}</if>
+            <if test="createBy != null and createBy != ''"> and s.create_by = #{createBy}</if>
+        </where>
+        order by s.log_id desc
+    </select>
+
+    <select id="selectWmSyncLogById" parameterType="Long" resultMap="WmSyncLogResult">
+        <include refid="selectWmSyncLogVo"/>
+        where s.log_id = #{logId}
+    </select>
+
+    <insert id="insertWmSyncLog" parameterType="WmSyncLog" useGeneratedKeys="true" keyProperty="logId">
+        insert into wm_sync_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="clientId != null">client_id,</if>
+            <if test="dataType != null">data_type,</if>
+            <if test="result != null">result,</if>
+            <if test="message != null">message,</if>
+            <if test="bizId != null">biz_id,</if>
+            <if test="createBy != null">create_by,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="clientId != null">#{clientId},</if>
+            <if test="dataType != null">#{dataType},</if>
+            <if test="result != null">#{result},</if>
+            <if test="message != null">#{message},</if>
+            <if test="bizId != null">#{bizId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateWmSyncLog" parameterType="WmSyncLog">
+        update wm_sync_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dataType != null">data_type = #{dataType},</if>
+            <if test="result != null">result = #{result},</if>
+            <if test="message != null">message = #{message},</if>
+            <if test="bizId != null">biz_id = #{bizId},</if>
+        </trim>
+        where log_id = #{logId}
+    </update>
+
+    <delete id="deleteWmSyncLogById" parameterType="Long">
+        delete from wm_sync_log where log_id = #{logId}
+    </delete>
+
+    <delete id="deleteWmSyncLogByIds" parameterType="Long">
+        delete from wm_sync_log where log_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

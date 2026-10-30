@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.trace.mapper.WmBatchMapper">
+
+    <resultMap type="WmBatch" id="WmBatchResult">
+        <id     property="batchId" column="batch_id" />
+        <result property="batchCode" column="batch_code" />
+        <result property="plotId" column="plot_id" />
+        <result property="variety" column="variety" />
+        <result property="plantDate" column="plant_date" />
+        <result property="harvestDate" column="harvest_date" />
+        <result property="expectedYieldKg" column="expected_yield_kg" />
+        <result property="brandName" column="brand_name" />
+        <result property="brandLogo" column="brand_logo" />
+        <result property="brandDesc" column="brand_desc" />
+        <result property="coverImage" column="cover_image" />
+        <result property="qrPath" column="qr_path" />
+        <result property="scanCount" column="scan_count" />
+        <result property="farmerId" column="farmer_id" />
+        <result property="status" column="status" />
+        <result property="createBy" column="create_by" />
+        <result property="createTime" column="create_time" />
+        <result property="updateBy" column="update_by" />
+        <result property="updateTime" column="update_time" />
+        <result property="remark" column="remark" />
+        <result property="plotName" column="plotName" />
+        <result property="farmerName" column="farmerName" />
+    </resultMap>
+
+    <sql id="selectWmBatchVo">
+        select b.batch_id, b.batch_code, b.plot_id, b.variety, b.plant_date, b.harvest_date, b.expected_yield_kg, b.brand_name, b.brand_logo, b.brand_desc, b.cover_image, b.qr_path, b.scan_count, b.farmer_id, b.status, b.create_by, b.create_time, b.update_by, b.update_time, b.remark, p.plot_name as plotName, u.nick_name as farmerName
+        from wm_batch b
+        left join wm_plot p on p.plot_id = b.plot_id
+        left join sys_user u on u.user_id = b.farmer_id
+    </sql>
+
+    <select id="selectWmBatchList" parameterType="WmBatch" resultMap="WmBatchResult">
+        <include refid="selectWmBatchVo"/>
+        <where>
+            <if test="batchCode != null and batchCode != ''"> and b.batch_code like concat('%', #{batchCode}, '%')</if>
+            <if test="plotId != null"> and b.plot_id = #{plotId}</if>
+            <if test="variety != null and variety != ''"> and b.variety like concat('%', #{variety}, '%')</if>
+            <if test="brandName != null and brandName != ''"> and b.brand_name like concat('%', #{brandName}, '%')</if>
+            <if test="farmerId != null"> and b.farmer_id = #{farmerId}</if>
+            <if test="status != null and status != ''"> and b.status = #{status}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"> and date_format(b.plant_date,'%Y%m%d') &gt;= date_format(#{params.beginTime},'%Y%m%d')</if>
+            <if test="params.endTime != null and params.endTime != ''"> and date_format(b.plant_date,'%Y%m%d') &lt;= date_format(#{params.endTime},'%Y%m%d')</if>
+        </where>
+        order by b.batch_id desc
+    </select>
+
+    <select id="selectWmBatchById" parameterType="Long" resultMap="WmBatchResult">
+        <include refid="selectWmBatchVo"/>
+        where b.batch_id = #{batchId}
+    </select>
+
+    <insert id="insertWmBatch" parameterType="WmBatch" useGeneratedKeys="true" keyProperty="batchId">
+        insert into wm_batch
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="batchCode != null">batch_code,</if>
+            <if test="plotId != null">plot_id,</if>
+            <if test="variety != null">variety,</if>
+            <if test="plantDate != null">plant_date,</if>
+            <if test="harvestDate != null">harvest_date,</if>
+            <if test="expectedYieldKg != null">expected_yield_kg,</if>
+            <if test="brandName != null">brand_name,</if>
+            <if test="brandLogo != null">brand_logo,</if>
+            <if test="brandDesc != null">brand_desc,</if>
+            <if test="coverImage != null">cover_image,</if>
+            <if test="qrPath != null">qr_path,</if>
+            <if test="scanCount != null">scan_count,</if>
+            <if test="farmerId != null">farmer_id,</if>
+            <if test="status != null">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="remark != null">remark,</if>
+            create_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="batchCode != null">#{batchCode},</if>
+            <if test="plotId != null">#{plotId},</if>
+            <if test="variety != null">#{variety},</if>
+            <if test="plantDate != null">#{plantDate},</if>
+            <if test="harvestDate != null">#{harvestDate},</if>
+            <if test="expectedYieldKg != null">#{expectedYieldKg},</if>
+            <if test="brandName != null">#{brandName},</if>
+            <if test="brandLogo != null">#{brandLogo},</if>
+            <if test="brandDesc != null">#{brandDesc},</if>
+            <if test="coverImage != null">#{coverImage},</if>
+            <if test="qrPath != null">#{qrPath},</if>
+            <if test="scanCount != null">#{scanCount},</if>
+            <if test="farmerId != null">#{farmerId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="remark != null">#{remark},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+    <update id="updateWmBatch" parameterType="WmBatch">
+        update wm_batch
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchCode != null">batch_code = #{batchCode},</if>
+            <if test="plotId != null">plot_id = #{plotId},</if>
+            <if test="variety != null">variety = #{variety},</if>
+            <if test="plantDate != null">plant_date = #{plantDate},</if>
+            <if test="harvestDate != null">harvest_date = #{harvestDate},</if>
+            <if test="expectedYieldKg != null">expected_yield_kg = #{expectedYieldKg},</if>
+            <if test="brandName != null">brand_name = #{brandName},</if>
+            <if test="brandLogo != null">brand_logo = #{brandLogo},</if>
+            <if test="brandDesc != null">brand_desc = #{brandDesc},</if>
+            <if test="coverImage != null">cover_image = #{coverImage},</if>
+            <if test="qrPath != null">qr_path = #{qrPath},</if>
+            <if test="scanCount != null">scan_count = #{scanCount},</if>
+            <if test="farmerId != null">farmer_id = #{farmerId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </trim>
+        where batch_id = #{batchId}
+    </update>
+
+    <delete id="deleteWmBatchById" parameterType="Long">
+        delete from wm_batch where batch_id = #{batchId}
+    </delete>
+
+    <delete id="deleteWmBatchByIds" parameterType="Long">
+        delete from wm_batch where batch_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectWmBatchByCode" parameterType="String" resultMap="WmBatchResult">
+        <include refid="selectWmBatchVo"/>
+        where b.batch_code = #{batchCode}
+    </select>
+
+    <select id="selectMaxBatchCode" parameterType="String" resultType="String">
+        select max(batch_code) from wm_batch where batch_code like concat(#{codePrefix}, '%')
+    </select>
+
+    <update id="increaseScanCount" parameterType="Long">
+        update wm_batch set scan_count = ifnull(scan_count, 0) + 1 where batch_id = #{batchId}
+    </update>
+</mapper>
