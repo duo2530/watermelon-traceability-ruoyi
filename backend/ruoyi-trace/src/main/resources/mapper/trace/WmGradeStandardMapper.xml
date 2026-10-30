@@ -84,10 +84,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="gradeCode != null">grade_code = #{gradeCode},</if>
             <if test="gradeName != null">grade_name = #{gradeName},</if>
             <if test="variety != null">variety = #{variety},</if>
-            <if test="sugarCenterMin != null">sugar_center_min = #{sugarCenterMin},</if>
-            <if test="sugarEdgeMin != null">sugar_edge_min = #{sugarEdgeMin},</if>
-            <if test="weightMin != null">weight_min = #{weightMin},</if>
-            <if test="weightMax != null">weight_max = #{weightMax},</if>
+            sugar_center_min = #{sugarCenterMin},
+            sugar_edge_min = #{sugarEdgeMin},
+            weight_min = #{weightMin},
+            weight_max = #{weightMax},
             <if test="shapeAllow != null">shape_allow = #{shapeAllow},</if>
             <if test="sort != null">sort = #{sort},</if>
             <if test="status != null">status = #{status},</if>
