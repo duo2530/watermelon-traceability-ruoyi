@@ -3,11 +3,13 @@ package com.ruoyi.trace.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.DictUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.trace.domain.WmBatch;
@@ -59,8 +61,8 @@ public class WmTraceServiceImpl implements IWmTraceService
         Map<String, Object> b = new LinkedHashMap<>();
         b.put("batchCode", batch.getBatchCode());
         b.put("variety", batch.getVariety());
-        b.put("plantDate", batch.getPlantDate());
-        b.put("harvestDate", batch.getHarvestDate());
+        b.put("plantDate", fmt(batch.getPlantDate(), DateUtils.YYYY_MM_DD));
+        b.put("harvestDate", fmt(batch.getHarvestDate(), DateUtils.YYYY_MM_DD));
         b.put("status", batch.getStatus());
         b.put("statusLabel", DictUtils.getDictLabel("wm_batch_status", batch.getStatus()));
         b.put("coverImage", batch.getCoverImage());
@@ -104,7 +106,7 @@ public class WmTraceServiceImpl implements IWmTraceService
             t.put("content", r.getContent());
             t.put("inputName", r.getInputName());
             t.put("inputAmount", r.getInputAmount());
-            t.put("recordTime", r.getRecordTime());
+            t.put("recordTime", fmt(r.getRecordTime(), DateUtils.YYYY_MM_DD_HH_MM_SS));
             t.put("weather", r.getWeather());
             t.put("images", splitImages(r.getImages()));
             timeline.add(t);
@@ -148,7 +150,7 @@ public class WmTraceServiceImpl implements IWmTraceService
                 m.put("fruitShape", DictUtils.getDictLabel("wm_fruit_shape", r.getFruitShape()));
                 m.put("weightKg", r.getWeightKg());
                 m.put("gradeName", g);
-                m.put("checkTime", r.getCheckTime());
+                m.put("checkTime", fmt(r.getCheckTime(), DateUtils.YYYY_MM_DD_HH_MM_SS));
                 m.put("images", splitImages(r.getImages()));
                 samples.add(m);
             }
@@ -187,6 +189,11 @@ public class WmTraceServiceImpl implements IWmTraceService
             }
         }
         return list;
+    }
+
+    private static String fmt(Date date, String pattern)
+    {
+        return date == null ? null : DateUtils.parseDateToStr(pattern, date);
     }
 
     private static String maskName(String name)
